@@ -7,10 +7,6 @@ pipeline {
 
   stages {
 
-    stage('checkout') {
-      
-    }
-
     stage('Build') {
       agent {
         docker {
