@@ -32,13 +32,13 @@ pipeline {
         git credentialsId: 'github',
           url: 'https://github.com/amefu/galaxy-jenkins-lab-alfredo-mendoza.git',
           branch: 'master'
-          
+
         script {
           def scannerHome = tool 'scanner-default';;
           withSonarQubeEnv('sonar-server') {
             sh "${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectKey=examenfinal \
-                            -Dsonar.projectName=examenfinal \
+                            -Dsonar.projectKey=labmaven01 \
+                            -Dsonar.projectName=labmaven01 \
                             -Dsonar.sources=src/master \
                             -Dsonar.sourceEncoding=UTF-8 \
                             -Dsonar.language=java \
