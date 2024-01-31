@@ -39,7 +39,7 @@ pipeline {
             sh "${scannerHome}/bin/sonar-scanner \
                             -Dsonar.projectKey=labmaven01 \
                             -Dsonar.projectName=labmaven01 \
-                            -Dsonar.sources=src/master \
+                            -Dsonar.sources=src/main \
                             -Dsonar.sourceEncoding=UTF-8 \
                             -Dsonar.language=java \
                             -Dsonar.tests=src/test \
