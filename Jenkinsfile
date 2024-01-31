@@ -55,5 +55,80 @@ pipeline {
         }
       }
     }
+
+    stage('Build Image') {
+      steps {
+        copyArtifacts filter: 'target/*.jar',
+          fingerprintArtifacts: true,
+          projectName: '${JOB_NAME}',
+          flatten: true,
+          selector: specific('${BUILD_NUMBER}'),
+          target: 'build/libs/'
+        sh 'docker --version'
+        sh 'docker-compose --version'
+        sh 'docker-compose build'
+      }
+    }
+    stage('Publish Image') {
+      steps {
+        script {
+          sh 'docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}'
+          sh 'docker tag msmicroservice ${DOCKER_CREDS_USR}/msmicroservice:$BUILD_NUMBER'
+          sh 'docker push ${DOCKER_CREDS_USR}/msmicroservice:$BUILD_NUMBER'
+          sh 'docker logout'
+        }
+      }
+    }
+    stage('Run Container') {
+      steps {
+        script {
+          sh 'docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}'
+          sh 'docker rm galaxyLab -f'
+          sh 'docker run -d -p 8080:8080 --name galaxyLab ${DOCKER_CREDS_USR}/msmicroservice:$BUILD_NUMBER'
+          //sh 'docker run -d -p 8080:8080 ${DOCKER_CREDS_USR}/msmicroservice:$BUILD_NUMBER'
+          sh 'docker logout'
+        }
+      }
+    }
+    stage('Test Run Container') {
+      steps {
+        script {
+          sh 'docker ps'
+          //    sh 'curl http://192.168.1.17:8080/customers'
+        }
+      }
+    }
+
+    stage('Crear Folder y Pipeline') {
+      steps {
+        script {
+          // Crear el Folder galaxy-examen usando sh mkdir
+          def folderName = 'galaxy-examen'
+          sh "mkdir -p ${folderName}"
+
+          // Crear el archivo Jenkinsfile (pipeline-final) dentro de galaxy-examen
+          def pipelineScript = ""
+          "
+          pipeline {
+            agent any
+            stages {
+              stage('Llamar Repositorio') {
+                steps {
+                  script {
+                    // llama al repositorio donde se encuentra el jenkinsfile actual
+                    git credentialsId: 'github',
+                      url: 'https://github.com/amefu/galaxy-jenkins-lab-alfredo-mendoza.git',
+                      branch: 'main'
+                  }
+                }
+              }
+            }
+          }
+          ""
+          "
+          writeFile(file: "${folderName}/pipeline-final", text: pipelineScript.trim())
+        }
+      }
+    }
   }
 }
