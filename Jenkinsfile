@@ -63,7 +63,7 @@ pipeline {
           projectName: '${JOB_NAME}',
           flatten: true,
           selector: specific('${BUILD_NUMBER}'),
-          target: 'build/libs/'
+          target: 'target'
         sh 'docker --version'
         sh 'docker-compose --version'
         sh 'docker-compose build'
