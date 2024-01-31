@@ -107,8 +107,7 @@ pipeline {
           sh "mkdir -p ${folderName}"
 
           // Crear el archivo Jenkinsfile (pipeline-final) dentro de galaxy-examen
-          def pipelineScript = ""
-          "
+          def pipelineScript = """
           pipeline {
             agent any
             stages {
@@ -124,8 +123,7 @@ pipeline {
               }
             }
           }
-          ""
-          "
+          """
           writeFile(file: "${folderName}/pipeline-final", text: pipelineScript.trim())
         }
       }
